@@ -1,0 +1,71 @@
+@page "/iss"
+@using System.Threading
+@using System.Diagnostics
+@using BlazorUI.Services
+@inject IissService IssService
+@implements IDisposable
+
+<h1>ISS Position</h1>
+
+
+@if (_message == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p>
+        <em>Time</em>: @_message.LocalTime.ToString("yyyy/MM/dd HH:mm:ss")
+    </p>
+    <p>
+        <em>Latitude</em>: @_message.IssPosition.Latitude
+    </p>
+    <p>
+        <em>Longitude</em>: @_message.IssPosition.Longitude
+    </p>
+
+
+                        }
+
+@code {
+    private IssMessageDto _message;
+    private Timer _timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _message = await GetPosition();
+
+        // Start a timer at 1 second intervals
+        _timer = new Timer(async _ =>
+        {
+            _message = await IssService.GetPosition();
+            await InvokeAsync(StateHasChanged);
+        }, null, 0, 1000);
+
+    }
+
+    private async Task<IssMessageDto> GetPosition()
+    {
+        try
+        {
+            var message = await IssService.GetPosition();
+            return message;
+
+        }
+        catch (Exception exception)
+        {
+            Debug.WriteLine(exception);
+            throw;
+        };
+
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+
+
+
+}
