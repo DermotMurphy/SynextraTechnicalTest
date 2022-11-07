@@ -1,30 +1,34 @@
-﻿using System;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
-namespace BlazorUI.Services
+namespace BlazorUI.Services;
+
+public class IssService : IissService
 {
-    public class IssService : IissService
+    private readonly HttpClient _client;
+
+    public IssService(HttpClient client)
     {
-        private readonly HttpClient _client;
+        _client = client;
+    }
 
-        public IssService(HttpClient client)
+    public async Task<IssMessageDto> GetPosition()
+    {
+        var response = await _client.GetAsync("https://localhost:44316/IssLocation");
+
+        var content = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
         {
-            _client = client;
+            throw new ApplicationException(content);
         }
 
-        public async Task<IssMessageDto> GetPosition()
-        {
-            var response = await _client.GetAsync("https://localhost:44316/IssLocation");
-            var content = await response.Content.ReadAsStringAsync();
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new ApplicationException(content);
-            }
+        var message = JsonSerializer.Deserialize<IssMessageDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ??
+                      CreateFakeIssMessageDto();
 
-            var message = JsonSerializer.Deserialize<IssMessageDto>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            return message;
-        }
+        return message;
+    }
+
+    private IssMessageDto CreateFakeIssMessageDto()
+    {
+        return new IssMessageDto { Message = "Missing", LocalTime = DateTime.Now };
     }
 }

@@ -1,12 +1,11 @@
 ﻿using Newtonsoft.Json;
 
-namespace Synextra.Domain
+namespace Synextra.Domain;
+
+public class IssPosition
 {
-    public class IssPosition
-    {
-        [JsonProperty("latitude")]
-        public double Latitude { get; set; }
-        [JsonProperty("longitude")]
-        public double Longitude { get; set; }
-    }
+    [JsonProperty("latitude")]
+    public double Latitude { get; set; }
+    [JsonProperty("longitude")]
+    public double Longitude { get; set; }
 }

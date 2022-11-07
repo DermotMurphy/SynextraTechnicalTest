@@ -28,8 +28,8 @@ else
                         }
 
 @code {
-    private IssMessageDto _message;
-    private Timer _timer;
+    private IssMessageDto _message = new IssMessageDto();
+    private Timer? _timer;
 
     protected override async Task OnInitializedAsync()
     {

@@ -1,9 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿namespace BlazorUI.Services;
 
-namespace BlazorUI.Services
+public interface IissService
 {
-    public interface IissService
-    {
-        Task<IssMessageDto> GetPosition();
-    }
+    Task<IssMessageDto> GetPosition();
 }

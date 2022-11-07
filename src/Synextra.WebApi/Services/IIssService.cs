@@ -1,10 +1,8 @@
-﻿using System.Threading.Tasks;
-using Synextra.Domain;
+﻿using Synextra.Domain;
 
-namespace Synextra.WebApi.Services
+namespace Synextra.WebApi.Services;
+
+public interface IIssService
 {
-    public interface IIssService
-    {
-        Task<IssMessage> GetMessageAsync();
-    }
+    Task<IssMessage> GetMessageAsync();
 }

@@ -1,31 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Synextra.Domain;
 
-namespace Synextra.WebApi.Services
+namespace Synextra.WebApi.Services;
+
+public class IssService: IIssService
 {
-    public class IssService: IIssService
+    private readonly HttpClient _httpClient;
+
+    public IssService(HttpClient httpClient)
     {
-        private readonly HttpClient _httpClient;
+        httpClient.BaseAddress = new Uri("http://api.open-notify.org/");
+        _httpClient = httpClient;
+    }
 
-        public IssService(HttpClient httpClient)
-        {
-            httpClient.BaseAddress = new Uri("http://api.open-notify.org/");
-            _httpClient = httpClient;
-        }
+    public async Task<IssMessage> GetMessageAsync()
+    {
+        const string path = "iss-now.json";
+        var response = await _httpClient.GetStringAsync(path);
 
-        public async Task<IssMessage> GetMessageAsync()
-        {
-            const string path = "iss-now.json";
-            var response = await _httpClient.GetStringAsync(path);
+        var issMessage = JsonConvert.DeserializeObject<IssMessage>(response) ?? CreateFakeIssMessage();
 
-            IssMessage issMessage = JsonConvert.DeserializeObject<IssMessage>(response);
+        return issMessage;
+    }
 
-            return issMessage;
-        }
+    private static IssMessage CreateFakeIssMessage()
+    {
+        var unixTimestamp = (int)DateTime.UtcNow.Subtract(DateTime.UnixEpoch).TotalSeconds;
+        return new IssMessage { Message = "Missing", Timestamp = unixTimestamp };
     }
 }
